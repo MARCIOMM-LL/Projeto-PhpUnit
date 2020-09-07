@@ -19,111 +19,114 @@ class AvaliadorTest extends TestCase
     //iniciar com palavra test em inglês e em seguida
     //o nome precisa ser bastante descritivo sobre o
     //que o método irá fazer
-    public function testAvaliadorDeveEncontrarOMaiorValorDeLancesEmOrdemCrescente()
+
+    private $leiloeiro;
+
+    protected function setUp(): void
     {
-        //Padrões de teste Início - Arrange - Given
-        $leilao = new Leilao('Mercedes');
+        $this->leiloeiro = new Avaliador();
+    }
 
-        $maria = new Usuario('Maria');
-        $joao = new Usuario('João');
+    /**
+     * @dataProvider  leilaoEmOrdemCrescente
+     * @dataProvider  leilaoEmOrdemDecrescente
+     * @dataProvider  leilaoEmOrdemAleatoria
+     */
+    public function testAvaliadorDeveEncontrarOMaiorValorDeLances(Leilao $leilao)
+    {
+        $this->leiloeiro->avalia($leilao);
 
-        $leilao->recebeLance(new Lance($joao, 2000));
-        $leilao->recebeLance(new Lance($maria, 2500));
+        $maiorValor = $this->leiloeiro->getMaiorValor();
 
-        $leiloeiro = new Avaliador();
-
-        //Padrões de teste Início - Act - When
-        $leiloeiro->avalia($leilao);
-
-        $maiorValor = $leiloeiro->getMaiorValor();
-
-        //Padrões de teste Início - Assert - Then
-        echo $maiorValor;
-
-        //Método da classe TestCase
-        //Esse método verifica que 2 valores são iguais
-        //Verificando se valor esperado/2500 é igual a $maiorValor
         self::assertEquals(2500, $maiorValor);
     }
 
-    public function testAvaliadorDeveEncontrarOMaiorValorDeLancesEmOrdemDecrescente()
+    /**
+     * @dataProvider  leilaoEmOrdemCrescente
+     * @dataProvider  leilaoEmOrdemDecrescente
+     * @dataProvider  leilaoEmOrdemAleatoria
+     */
+    public function testAvaliadorDeveEncontrarOMenorValorDeLances(Leilao $leilao)
     {
-        //Padrões de teste Início - Arrange - Given
+        //Padrões de teste Início - Act - When
+        $this->leiloeiro->avalia($leilao);
+
+        $menorValor = $this->leiloeiro->getMenorValor();
+
+        //Método da classe TestCase
+        //Esse método verifica que 2 valores são iguais
+        //Verificando se valor esperado/2500 é igual a $menorValor
+        //Padrões de teste: O que testar - Assert - Then
+        self::assertEquals(1700, $menorValor);
+    }
+
+    /**
+     * @dataProvider  leilaoEmOrdemCrescente
+     * @dataProvider  leilaoEmOrdemDecrescente
+     * @dataProvider  leilaoEmOrdemAleatoria
+     */
+    public function testAvaliadorDeveBuscar3MaioresValores(Leilao $leilao)
+    {
+        $this->leiloeiro->avalia($leilao);
+
+        $maiores = $this->leiloeiro->getMaioresLances();
+
+        self::assertCount(3, $maiores);
+        self::assertEquals(2500, $maiores[0]->getValor());
+        self::assertEquals(2000, $maiores[1]->getValor());
+        self::assertEquals(1700, $maiores[2]->getValor());
+    }
+
+    /* ---------- DADOS ---------- */
+    public function leilaoEmOrdemCrescente()
+    {
         $leilao = new Leilao('Mercedes');
 
         $maria = new Usuario('Maria');
         $joao = new Usuario('João');
+        $ana = new Usuario('Ana');
 
-        $leilao->recebeLance(new Lance($maria, 2500));
+        $leilao->recebeLance(new Lance($ana, 1700));
         $leilao->recebeLance(new Lance($joao, 2000));
+        $leilao->recebeLance(new Lance($maria, 2500));
 
-        $leiloeiro = new Avaliador();
-
-        //Padrões de teste Início - Act - When
-        $leiloeiro->avalia($leilao);
-
-        $maiorValor = $leiloeiro->getMaiorValor();
-
-        //Padrões de teste Início - Assert - Then
-        echo $maiorValor;
-
-        //Método da classe TestCase
-        //Esse método verifica que 2 valores são iguais
-        //Verificando se valor esperado/2500 é igual a $maiorValor
-        self::assertEquals(2500, $maiorValor);
+        return [
+            'Ordem Crescente' => [$leilao]
+        ];
     }
 
-    public function testAvaliadorDeveEncontrarOMenorValorDeLancesEmOrdemDecrescente()
+    public function leilaoEmOrdemDecrescente()
     {
-        //Padrões de teste Início - Arrange - Given
         $leilao = new Leilao('Mercedes');
 
         $maria = new Usuario('Maria');
         $joao = new Usuario('João');
+        $ana = new Usuario('Ana');
 
         $leilao->recebeLance(new Lance($maria, 2500));
         $leilao->recebeLance(new Lance($joao, 2000));
+        $leilao->recebeLance(new Lance($ana, 1700));
 
-        $leiloeiro = new Avaliador();
-
-        //Padrões de teste Início - Act - When
-        $leiloeiro->avalia($leilao);
-
-        $menorValor = $leiloeiro->getMenorValor();
-
-        //Padrões de teste Início - Assert - Then
-        echo $menorValor;
-
-        //Método da classe TestCase
-        //Esse método verifica que 2 valores são iguais
-        //Verificando se valor esperado/2500 é igual a $maiorValor
-        self::assertEquals(2000, $menorValor);
+        return [
+            'Ordem Decrescente' => [$leilao]
+        ];
     }
 
-    public function testAvaliadorDeveEncontrarOMenorValorDeLancesEmOrdemCrescente()
+    public function leilaoEmOrdemAleatoria()
     {
-        //Padrões de teste Início - Arrange - Given
         $leilao = new Leilao('Mercedes');
 
         $maria = new Usuario('Maria');
         $joao = new Usuario('João');
+        $ana = new Usuario('Ana');
 
         $leilao->recebeLance(new Lance($joao, 2000));
         $leilao->recebeLance(new Lance($maria, 2500));
+        $leilao->recebeLance(new Lance($ana, 1700));
 
-        $leiloeiro = new Avaliador();
-
-        //Padrões de teste Início - Act - When
-        $leiloeiro->avalia($leilao);
-
-        $menorValor = $leiloeiro->getMenorValor();
-
-        //Padrões de teste Início - Assert - Then
-        echo $menorValor;
-
-        //Método da classe TestCase
-        //Esse método verifica que 2 valores são iguais
-        //Verificando se valor esperado/2500 é igual a $maiorValor
-        self::assertEquals(2000, $menorValor);
+        return [
+            'Ordem Aleatória' => [$leilao]
+        ];
     }
+
 }
