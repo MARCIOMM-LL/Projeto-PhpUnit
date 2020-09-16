@@ -5,7 +5,7 @@ namespace Alura\Leilao\Service;
 use Alura\Leilao\Model\Lance;
 use Alura\Leilao\Model\Leilao;
 
-use function foo\func;
+use DomainException;
 
 class Avaliador
 {
@@ -27,6 +27,14 @@ class Avaliador
         //        $this->maiorValor = $lance->getValor();
         //    }
         //}
+
+        if ($leilao->estaFinalizado()) {
+            throw new DomainException('Leilão já finalizado.');
+        }
+
+        if (empty($leilao->getLances())) {
+            throw new DomainException('Não é possível avaliar leilão vazio.');
+        }
 
         foreach ($leilao->getLances() as $lance) {
             if ($lance->getValor() > $this->maiorValor) {

@@ -1,5 +1,7 @@
 <?php
 
+namespace Alura\Leilao\Tests\Model;
+
 use Alura\Leilao\Model\Lance;
 use Alura\Leilao\Model\Leilao;
 use Alura\Leilao\Model\Usuario;
@@ -9,23 +11,23 @@ class LeilaoTest extends TestCase
 {
     public function testLeilaoNaoDeveReceberLancesRepetidos()
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Usuário não pode propor 2 lances consecutivos');
         $leilao = new Leilao('Variante');
-
         $ana = new Usuario('Ana');
 
         $leilao->recebeLance(new Lance($ana, 1000));
         $leilao->recebeLance(new Lance($ana, 1500));
-
-        self::assertCount(1, $leilao->getLances());
-        self::assertEquals(1000, $leilao->getLances() [0]->getValor());
     }
 
     public function testLeilaoNaoDeveAceitarMaisDe5LancesPorUsuario()
     {
-        $leilao = new Leilao('Porsche Cayenne');
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Usuário não pode propor mais de 5 lances por leilão');
 
+        $leilao = new Leilao('Brasília Amarela');
         $joao = new Usuario('João');
-        $maria = new Usuario('Ana');
+        $maria = new Usuario('Maria');
 
         $leilao->recebeLance(new Lance($joao, 1000));
         $leilao->recebeLance(new Lance($maria, 1500));
@@ -39,19 +41,16 @@ class LeilaoTest extends TestCase
         $leilao->recebeLance(new Lance($maria, 5500));
 
         $leilao->recebeLance(new Lance($joao, 6000));
-
-        self::assertCount(10, $leilao->getLances());
-        self::assertEquals(5500, $leilao->getLances() [array_key_last($leilao->getLances())]->getValor());
     }
 
     /**
      * @dataProvider geraLances
-     * @param int $qtdlances
-     * @param Leilao $leilao
-     * @param array $valores
      */
-    public function testLeilaoDeveReceberLances(int $qtdLances, Leilao $leilao, array $valores)
-    {
+    public function testLeilaoDeveReceberLances(
+        int $qtdLances,
+        Leilao $leilao,
+        array $valores
+    ) {
         static::assertCount($qtdLances, $leilao->getLances());
 
         foreach ($valores as $i => $valorEsperado) {
@@ -76,5 +75,4 @@ class LeilaoTest extends TestCase
             '1-lance' => [1, $leilaoCom1Lance, [5000]]
         ];
     }
-    
 }
