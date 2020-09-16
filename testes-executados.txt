@@ -1,6 +1,8 @@
 Leilao
+ [x] Leilao nao deve receber lances repetidos
+ [x] Leilao nao deve aceitar mais de 5 lances por usuario
  [x] Leilao deve receber lances with data set "2-lances"
- [ ] Leilao deve receber lances with data set "1-lance"
+ [x] Leilao deve receber lances with data set "1-lance"
 
 Avaliador (Alura\Leilao\Tests\Service\Avaliador)
  [x] Avaliador deve encontrar o maior valor de lances with data set "Ordem Crescente"
